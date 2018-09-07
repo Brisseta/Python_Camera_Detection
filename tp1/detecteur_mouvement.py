@@ -3,6 +3,9 @@ from imutils.video import VideoStream
 import imutils
 import cv2
 import threading
+from termcolor import colored
+
+
 vs = VideoStream(src=0).start()
 mouvementDetecte = False
 
@@ -10,6 +13,9 @@ mouvementDetecte = False
 def reset_Timer(cnts):
     mouvementDetecte=False
     cnts = None
+
+def sendAlert():
+    print(colored("Attention un mouvement a été detecté",'red'))
 
 # initialize the first frame in the video stream
 firstFrame = None
@@ -25,7 +31,7 @@ while True:
         break
 
     # convertion pour comparaison en "mode gris"
-    frame = imutils.resize(frame, width=500)
+    frame = imutils.resize(frame, width=750)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
@@ -39,7 +45,7 @@ while True:
 
     # dilate the thresholded image to fill in holes, then find contours
     # on thresholded image
-    thresh = cv2.dilate(thresh, None, iterations=2)
+    thresh = cv2.dilate(thresh, None, iterations=4)
     cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                             cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if imutils.is_cv2() else cnts[1]
@@ -52,13 +58,15 @@ while True:
 
         #contour de l'image
         (x, y, w, h) = cv2.boundingRect(c)
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255),1)
         mouvementDetecte = True
         #Toutes les n secondes la detection est reinitialisée
         timer = threading.Timer(2, reset_Timer(cnts))
+        if mouvementDetecte :
+            alert_timer = threading.Timer(10,sendAlert())
 
     cv2.imshow("Camera de sécurité", frame)
-    print("Mouvement detecté : %",mouvementDetecte)
+
     # cv2.imshow("Thresh", thresh)
     # cv2.imshow("Monde Gris vue", frameDelta)
     key = cv2.waitKey(1) & 0xFF
@@ -67,6 +75,5 @@ while True:
     if key == ord("q"):
         break
 
-    # cleanup the camera and close any open windows
 vs.stop()
 cv2.destroyAllWindows()
