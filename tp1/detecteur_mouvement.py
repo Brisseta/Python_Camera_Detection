@@ -53,7 +53,7 @@ while True:
     # loop over the contours
     for c in cnts:
         # if the contour is too small, ignore it
-        if cv2.contourArea(c) < 700:
+        if cv2.contourArea(c) < 500:
             continue
 
         #contour de l'image
@@ -64,6 +64,7 @@ while True:
         timer = threading.Timer(2, reset_Timer(cnts))
         if mouvementDetecte :
             alert_timer = threading.Timer(10,sendAlert())
+            reset_Timer(cnts)
 
     cv2.imshow("Camera de sécurité", frame)
 
