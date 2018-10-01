@@ -2,11 +2,15 @@
 import cv2
 import numpy as np
 # reading in the image
-img_rgb = cv2.imread('../data/data/waves.jpg')
+img_rgb = []
+img_rgb[0] = cv2.imread('../data/data/waves.jpg')
+img_rgb[1] = cv2.imread('../data/data/waves.jpg')
+img_rgb[2] = cv2.imread('../data/data/waves.jpg')
+img_rgb[3] = cv2.imread('../data/data/waves.jpg')
 # converting to grayscale
 img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
 # reading the template to be matched.
-template = cv2.imread('../data/data/beach.jpg',0)
+template = cv2.imread('../data/data/waves.jpg',0)
 w, h = template.shape[::-1]
 # threshold option, where if something is maybe an 80% match, then we say it's a match.
 res = cv2.matchTemplate(img_gray,template,cv2.TM_CCOEFF_NORMED)
